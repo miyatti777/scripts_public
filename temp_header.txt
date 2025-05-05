@@ -1,5 +1,0 @@
----
-description: 「Discovery（発見）フェーズの質問リストとテンプレートを提供し、Lean UXアプローチでの検証サイクルをサポートする」
-globs: 
-alwaysApply: false
---- 
