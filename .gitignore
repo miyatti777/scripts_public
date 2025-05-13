@@ -1,0 +1,19 @@
+__pycache__/ 
+
+# macOS Finderが生成するアイコンファイルを無視（すべての階層）
+Icon
+Icon?
+"Icon\r"
+**/Icon
+**/Icon?
+**/Icon[\r]
+
+.obsidian
+**/.obsidian
+
+# OS files
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+
+calendar_app

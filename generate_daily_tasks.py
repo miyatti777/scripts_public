@@ -40,7 +40,7 @@ def load_user_config(root_dir):
     """
     ユーザー設定ファイルを読み込む
     """
-    config_path = os.path.join(root_dir, "config", "user_config.yaml")
+    config_path = os.path.join(root_dir, "scripts", "config", "user_config.yaml")
     
     # デフォルト設定
     default_config = {

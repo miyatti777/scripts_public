@@ -1,0 +1,10 @@
+# ユーザー設定ファイル
+# 自分のユーザー名を設定します（複数指定可能）
+
+# assigneeフィルタリングに使用するユーザー名
+user_names:
+#  - 宮田
+#  - miyatti
+#  - Daisuke Miyata
+  - hirasawa 
+  - Hirasawa 
