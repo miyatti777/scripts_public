@@ -3,8 +3,7 @@
 
 # assigneeフィルタリングに使用するユーザー名
 user_names:
-#  - 宮田
-#  - miyatti
-#  - Daisuke Miyata
-  - hirasawa 
-  - Hirasawa 
+  - 宮田
+  #  - miyatti
+  #  - Daisuke Miyata
+

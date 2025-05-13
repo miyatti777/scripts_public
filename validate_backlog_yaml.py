@@ -147,6 +147,10 @@ def validate_backlog_yaml(file_path):
                     if "story_points" not in story:
                         errors.append(f"epic #{i}, story #{j} にストーリーポイント (story_points) がありません")
                     
+                    # アサイニーの検証
+                    if "assignee" not in story:
+                        warnings.append(f"epic #{i}, story #{j} に担当者 (assignee) が設定されていません")
+                    
                     # ストーリーステータスの検証
                     if "status" in story:
                         status = story["status"]
