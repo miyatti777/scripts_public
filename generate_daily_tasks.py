@@ -223,27 +223,49 @@ def filter_current_sprint_stories(extracted_data, current_sprints):
     return current_stories
 
 
-def filter_stories_by_assignee(stories, user_names):
+def filter_by_assignee(items, user_names):
     """
-    ユーザー名に基づいてストーリーをフィルタリング
+    ユーザー名に基づいてアイテム（ストーリーまたはルーチンタスク）をフィルタリング
     
-    user_namesに含まれるassigneeが割り当てられたストーリーのみを返す
-    user_namesが空の場合は全てのストーリーを返す
+    user_namesに含まれるassigneeが割り当てられたアイテムのみを返す
+    user_namesが空の場合は全てのアイテムを返す
     """
     if not user_names:
-        return stories
+        return items
     
     # ユーザー名を小文字に変換して比較する
     user_names_lower = [name.lower() for name in user_names]
     
-    filtered_stories = []
-    for story in stories:
-        assignee = story.get('assignee', '')
-        # assigneeが空でなく、ユーザー名リストに含まれている場合
+    filtered_items = []
+    for item in items:
+        matched = False
+        
+        # 直接アイテムに設定されたassignee（ストーリーの場合）
+        assignee = item.get('assignee', '')
         if assignee and (assignee.lower() in user_names_lower or any(name in assignee for name in user_names)):
-            filtered_stories.append(story)
+            matched = True
+        
+        # ルーチンタスクの場合、routine.tasksのそれぞれのタスクにassigneeがある可能性
+        if not matched and item.get('type') == 'routine_task':
+            routine = item.get('routine', {})
+            if 'tasks' in routine and isinstance(routine['tasks'], list):
+                for task in routine['tasks']:
+                    task_assignee = task.get('assignee', '')
+                    if task_assignee and (task_assignee.lower() in user_names_lower or any(name in task_assignee for name in user_names)):
+                        matched = True
+                        break
+        
+        if matched:
+            filtered_items.append(item)
     
-    return filtered_stories
+    return filtered_items
+
+
+def filter_stories_by_assignee(stories, user_names):
+    """
+    ユーザー名に基づいてストーリーをフィルタリング（後方互換性のため維持）
+    """
+    return filter_by_assignee(stories, user_names)
 
 
 def filter_routine_tasks(extracted_data, today_date=None):
@@ -449,17 +471,23 @@ def main():
         sprint_stories = filter_current_sprint_stories(extracted_data, current_sprints)
         print(f"{len(sprint_stories)} 件のスプリントストーリーが見つかりました。")
         
+        # ルーチンタスクをフィルタリング
+        routine_tasks = filter_routine_tasks(extracted_data, today_date)
+        print(f"{len(routine_tasks)} 件のルーチンタスクが見つかりました。")
+        
         # assigneeでフィルタリング
         if args.filter_assignee and not args.all_assignees:
             if user_names:
                 print(f"assigneeフィルタを適用します: {', '.join(user_names)}")
+                # ストーリーをフィルタリング
                 filtered_stories = filter_stories_by_assignee(sprint_stories, user_names)
                 print(f"{len(filtered_stories)} 件のストーリーが自分のassigneeとして見つかりました。")
                 sprint_stories = filtered_stories
-        
-        # ルーチンタスクをフィルタリング
-        routine_tasks = filter_routine_tasks(extracted_data, today_date)
-        print(f"{len(routine_tasks)} 件のルーチンタスクが見つかりました。")
+                
+                # ルーチンタスクもフィルタリング
+                filtered_routine_tasks = filter_by_assignee(routine_tasks, user_names)
+                print(f"{len(filtered_routine_tasks)} 件のルーチンタスクが自分のassigneeとして見つかりました。")
+                routine_tasks = filtered_routine_tasks
         
         # 日次タスクのマークダウンを生成
         success = generate_daily_tasks_markdown(sprint_stories, routine_tasks, output_file, today_date)

@@ -35,6 +35,7 @@ def validate_routines_yaml(file_path):
     # ルーチン定義の検証
     routine_count = 0
     task_count = 0
+    tasks_with_assignee = 0
     
     # 標準形式のルーチンチェック
     if "routines" in data and isinstance(data["routines"], list):
@@ -116,6 +117,12 @@ def validate_routines_yaml(file_path):
                             errors.append(f"routine #{i}, task #{j} の priority '{priority}' は 'high', 'medium', 'low' のいずれかである必要があります")
                     else:
                         warnings.append(f"routine #{i}, task #{j} に優先度 (priority) が指定されていません")
+                    
+                    # Assigneeの検証
+                    if "assignee" in task and task["assignee"]:
+                        tasks_with_assignee += 1
+                    else:
+                        warnings.append(f"routine #{i}, task #{j} に担当者 (assignee) が指定されていません")
             else:
                 warnings.append(f"routine #{i} には tasks が定義されていないか、リスト形式ではありません")
     
@@ -160,6 +167,12 @@ def validate_routines_yaml(file_path):
                         priority = task["priority"]
                         if not isinstance(priority, int) or priority < 0:
                             errors.append(f"{routine_key}, item #{j} の priority '{priority}' は 0以上の整数である必要があります")
+                    
+                    # Assigneeの検証
+                    if "assignee" in task and task["assignee"]:
+                        tasks_with_assignee += 1
+                    else:
+                        warnings.append(f"{routine_key}, item #{j} に担当者 (assignee) が指定されていません")
             else:
                 errors.append(f"{routine_key} には items が定義されていないか、リスト形式ではありません")
     
@@ -167,10 +180,20 @@ def validate_routines_yaml(file_path):
     if routine_count == 0:
         errors.append("ルーチン定義がありません。'routines' リストまたは代替形式のルーチン定義が必要です")
     
+    # Assigneeが指定されたタスクの割合をチェック
+    if task_count > 0 and tasks_with_assignee == 0:
+        warnings.append(f"すべてのタスク ({task_count}件) に担当者 (assignee) が指定されていません")
+    elif task_count > 0:
+        assignee_percentage = (tasks_with_assignee / task_count) * 100
+        if assignee_percentage < 50:
+            warnings.append(f"タスクの担当者 (assignee) 指定率が低いです ({tasks_with_assignee}/{task_count}, {assignee_percentage:.1f}%)")
+    
     # サマリーを作成
     summary = {
         "routine_count": routine_count,
-        "task_count": task_count
+        "task_count": task_count,
+        "tasks_with_assignee": tasks_with_assignee,
+        "assignee_coverage": f"{(tasks_with_assignee / task_count) * 100:.1f}%" if task_count > 0 else "N/A"
     }
     
     return errors, warnings, summary
@@ -196,6 +219,10 @@ def format_check_result(errors, warnings, summary):
                 result += f"  - ルーチン数: {value}\n"
             elif key == "task_count":
                 result += f"  - タスク数: {value}\n"
+            elif key == "tasks_with_assignee":
+                result += f"  - 担当者指定タスク数: {value}\n"
+            elif key == "assignee_coverage":
+                result += f"  - 担当者指定カバレッジ: {value}\n"
     
     if errors:
         result += "\n検証結果: 失敗 - エラーを修正してください\n"
