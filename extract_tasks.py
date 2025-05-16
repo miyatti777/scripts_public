@@ -239,8 +239,11 @@ def extract_routine_tasks(file_path):
             description = task.get('description', '')
             priority = task.get('priority', 'medium')
             estimate = task.get('estimate', 0)
+            assignee = task.get('assignee', '')  # タスクに設定されたassigneeを取得
             
             print(f"  タスク追加: {task_title}")
+            if assignee:
+                print(f"    Assignee: {assignee}")
             
             # タスク情報を追加
             tasks.append({
@@ -250,6 +253,7 @@ def extract_routine_tasks(file_path):
                 'description': description,
                 'priority': priority,
                 'estimate': estimate,
+                'assignee': assignee,  # assigneeフィールドを追加
                 'program_id': program_id,
                 'project_name': project_name,
                 'file_path': file_path,
@@ -258,7 +262,8 @@ def extract_routine_tasks(file_path):
                     'title': routine_title,
                     'frequency': frequency,
                     'day_of_week': day_of_week,
-                    'day_of_month': day_of_month
+                    'day_of_month': day_of_month,
+                    'tasks': routine_tasks  # タスク配列全体も含めておく
                 }
             })
     
