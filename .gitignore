@@ -15,3 +15,6 @@ Icon?
 .DS_Store
 */.DS_Store
 */*/.DS_Store
+
+calendar_app/.clasprc.json
+calendar_app/creds.json
