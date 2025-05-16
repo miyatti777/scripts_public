@@ -197,6 +197,7 @@ def get_current_sprint(extracted_data):
 def filter_current_sprint_stories(extracted_data, current_sprints):
     """
     現在のスプリントに割り当てられたストーリーをフィルタリング
+    完了済み(status: completed)のストーリーは除外する
     重複するストーリーIDは除外する
     current_sprintsはスプリントIDのリスト
     """
@@ -213,7 +214,8 @@ def filter_current_sprint_stories(extracted_data, current_sprints):
     for item in extracted_data:
         if item.get('type') == 'story':
             sprint_id = item.get('sprint_id') or item.get('sprint')
-            if sprint_id and sprint_id in current_sprints:
+            status = item.get('status', '')
+            if sprint_id and sprint_id in current_sprints and status != "completed":
                 story_id = item.get('id')
                 # 同じストーリーIDが既に処理されていない場合のみ追加
                 if story_id and story_id not in seen_story_ids:
