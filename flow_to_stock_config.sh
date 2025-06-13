@@ -6,8 +6,8 @@
 # プロジェクトのルートディレクトリ
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." &> /dev/null && pwd )"
 
-# プロジェクトID（kakakucomなど）
-PROJECT_ID="kakakucom"
+# プロジェクトID（dinnerなど）
+PROJECT_ID="dinner"
 
 # 各種ディレクトリの設定
 DOCUMENTS_DIR="${ROOT_DIR}/documents"
