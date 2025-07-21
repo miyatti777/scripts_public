@@ -1,21 +1,22 @@
-__pycache__/ 
+# =================================================
+# General Directory .gitignore
+# Note: Common files (*.log, .DS_Store, etc.)
+#       are handled by global gitignore
+# =================================================
 
-# macOS Finderが生成するアイコンファイルを無視（すべての階層）
-Icon
-Icon?
-"Icon\r"
-**/Icon
-**/Icon?
-**/Icon[\r]
+# Temporary files
+*.tmp
+*.temp
+temp/
 
-.obsidian
-**/.obsidian
+# Cache
+.cache/
+*.cache
 
-# OS files
-.DS_Store
-*/.DS_Store
-*/*/.DS_Store
+# Personal/private content
+personal/
+private/
+*.secret
 
-calendar_app/.clasprc.json
-calendar_app/creds.json
-calendar_app/.clasp.json
+# Project-specific
+# (Add project-specific patterns here)
